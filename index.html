@@ -36,6 +36,27 @@
             <div class="bg-white p-4 rounded-lg shadow text-center font-medium cursor-pointer hover:bg-gray-100">स्नैक्स (Snacks)</div>
         </div>
     </section>
+<script>
+    async function checkServer() {
+        try {
+            const response = await fetch('https://hopdukan.onrender.com/api/health');
+            const data = await response.json();
+            console.log("सर्वर का जवाब:", data);
+        } catch (error) {
+            console.error("सर्वर से कनेक्ट नहीं हो पाया:", error);
+        }
+    }
 
+    const searchInput = document.querySelector('input[type="text"]');
+    if (searchInput) {
+        searchInput.addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                alert('तुमने सर्च किया: ' + searchInput.value + '\n(सर्वर अब जुड़ चुका है!)');
+            }
+        });
+    }
+
+    checkServer();
+        </script>
 </body>
   </html>

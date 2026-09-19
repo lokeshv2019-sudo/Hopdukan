@@ -91,3 +91,47 @@ def db_check():
         return {"status": "ok", "message": "Database connected successfully! 🎉"}
     except Exception as e:
         return {"status": "error", "message": str(e)}
+
+from pydantic import BaseModel
+
+class ItemCreate(BaseModel):
+    name_hi: str
+    name_en: str
+    wholesale_price: float
+
+# 1. डेटाबेस में नया आइटम जोड़ने के लिए (सिर्फ टेस्टिंग के लिए)
+@app.post("/api/add-item")
+def add_item(item: ItemCreate):
+    db = SessionLocal()
+    try:
+        new_item = Item(name_hi=item.name_hi, name_en=item.name_en)
+        db.add(new_item)
+        db.commit()
+        db.refresh(new_item)
+
+        new_rate = Rate(item_id=new_item.id, wholesale_price=item.wholesale_price, source="manual")
+        db.add(new_rate)
+        db.commit()
+        return {"status": "ok", "message": f"{item.name_hi} जोड़ दिया गया है!"}
+    except Exception as e:
+        db.rollback()
+        return {"status": "error", "message": str(e)}
+    finally:
+        db.close()
+
+# 2. डेटाबेस से सारे आइटम निकालने के लिए
+@app.get("/api/items")
+def get_items():
+    db = SessionLocal()
+    items = db.query(Item).all()
+    result = []
+    for item in items:
+        rate = db.query(Rate).filter(Rate.item_id == item.id).first()
+        result.append({
+            "id": item.id,
+            "name_hi": item.name_hi,
+            "name_en": item.name_en,
+            "price": float(rate.wholesale_price) if rate else 0
+        })
+    db.close()
+    return {"items": result}

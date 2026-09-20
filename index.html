@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+s<!DOCTYPE html>
 <html lang="hi">
 <head>
     <meta charset="UTF-8">
@@ -57,6 +57,27 @@
     }
 
     checkServer();
-        </script>
+// टेस्ट बटन का काम
+const testAddBtn = document.getElementById('testAddBtn');
+if (testAddBtn) {
+    testAddBtn.addEventListener('click', async () => {
+        try {
+            const response = await fetch('https://hopdukan.onrender.com/api/add-item', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name_hi: 'आटा', name_en: 'Flour', wholesale_price: 40 })
+            });
+            const data = await response.json();
+            alert(data.message);
+        } catch (error) {
+            alert("एरर आया: " + error);
+        }
+    });
+    }
+
+        </script> 
+<!-- टेस्टिंग के लिए अस्थायी बटन -->
+<button id="testAddBtn" class="bg-green-600 text-white p-3 rounded-lg mt-4 block mx-auto">टेस्ट: आटा जोड़ें (₹40)</button>
+
 </body>
   </html>
